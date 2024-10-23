@@ -20,7 +20,7 @@ if (!isset($_SESSION)) {
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item"><a class="nav-link" href="../pages/book.php">Book List</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../pages/book.php">Books</a></li>
                     <li class="nav-item"><a class="nav-link" href="../pages/cart.php">Cart</a></li>
                     <li class="nav-item"><a class="nav-link" href="../pages/preferences.php">Preferences</a></li>
                     <li class="nav-item"><a class="nav-link" href="../pages/logout.php">Log Out</a></li>

@@ -1,11 +1,11 @@
 
 <?php include '../shared/header.php'; 
-function displayWelcomeMessage() {
-    $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
+function Welcome() {
+ 
     echo "<h2>Welcome ,Let's Explore our BookStore</h2>";
 }
 
-displayWelcomeMessage();
+Welcome();
 ?>
 
 <?php

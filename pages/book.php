@@ -1,42 +1,104 @@
-<?php include '../shared/header.php'; ?>
-<?php
-$book_prices = [
-    'USD' => ['Data Structure' => 10, 'SQL' => 15, 'Algorithms' => 12, 'DataBase' => 70, 'AI' => 45, 'System Analysis' => 35],
-    'EUR' => ['Data Structure' => 9, 'SQL' => 13, 'Algorithms' => 11, 'DataBase' => 60, 'AI' => 40, 'System Analysis' => 30],
-    'EGP' => ['Data Structure' => 300, 'SQL' => 450, 'Algorithms' => 360, 'DataBase' => 2100, 'AI' => 1350, 'System Analysis' => 1050],
-    'AED' => ['Data Structure' => 37, 'SQL' => 55, 'Algorithms' => 44, 'DataBase' => 260, 'AI' => 180, 'System Analysis' => 140],
-    'KWD' => ['Data Structure' => 3, 'SQL' => 4.5, 'Algorithms' => 3.6, 'DataBase' => 21, 'AI' => 13.5, 'System Analysis' => 10.5]
-];
+<?php 
+include '../shared/header.php'; 
+include '../database/db.php'; 
+include '../classes/book.php';
+include '../classes/cart.php';
+include '../shared/functions.php'; 
+
 $preferred_currency = $_COOKIE['preferred_currency'] ?? 'USD';
-$prices = $book_prices[$preferred_currency];
 
-echo "<h2>Our List of Books</h2>";
-echo "<div class='row'>";
 
-$books = [
-    'Data Structure' => 'Hedaya Adel',
-    'SQL' => 'Ali Mohamed',
-    'Algorithms' => 'Ahmed Ali',
-    'DataBase' => 'Hedaya Adel',
-    'AI' => 'Mohamed Ahmed',
-    'System Analysis' => 'Karim Ali Mohamed'
-];
+$db = new Database();
+$book = new Book($db->getConnection());
+$cart = new Cart();
 
-foreach ($books as $title => $author) {
-    $price = $prices[$title] ?? 0;
-    echo "<div class='col-md-4 mb-3'>";
-    echo "<div class='card'>";
-    echo "<div class='card-body'>";
-    echo "<h5 class='card-title'>{$title}</h5>";
-    echo "<p class='card-text'>by {$author}</p>";
-    echo "<p class='card-text'>Price: {$preferred_currency} {$price}</p>";
-    echo "<a href='book_detail.php?title={$title}' class='btn btn-primary'>Add to Cart</a>";
-    echo "</div>";
-    echo "</div>";
-    echo "</div>";
+$books = $book->getBooks();
+
+if (isset($_GET['add'])) {
+    $bookId = $_GET['add'];
+    $selectedBook = $book->getBookById($bookId);
+    $cart->addToCart($selectedBook);
+    
+    echo "<div class='alert alert-success'>Added {$selectedBook['title']} to cart.</div>";
 }
-
-echo "</div>";
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book List</title>
+    <link rel="stylesheet" href="path/to/your/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .book-item {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .book-item h3 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #333;
+        }
+        .book-item p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .btn {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            color: #fff;
+            background-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+    <?php foreach ($books as $book): ?>
+            <div class="book-item">
+                <div class="book-details">
+                    <h3><?php echo htmlspecialchars($book['title']); ?> by <?php echo htmlspecialchars($book['author']); ?></h3>
+                    
+                    <?php
+                    $price_in_usd = $book['price']; 
+                    $converted_price = convertPrice($price_in_usd, $preferred_currency); 
+                    ?>
+                    <p>Price: <?php echo htmlspecialchars($converted_price); ?> <?php echo htmlspecialchars($preferred_currency); ?></p>
+                </div>
+                <a href="book.php?add=<?php echo $book['id']; ?>" class="btn">Add to Cart</a>
+            </div>
+            <?php endforeach; ?>
+           </body>
+           </html>
 
 <?php include '../shared/footer.php'; ?>
